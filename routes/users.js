@@ -1,17 +1,31 @@
 const routerUsers = require('express').Router();
-const users = require('../data/users.json');
+const fs = require('fs');
 
-routerUsers.get('/users', (req, res) => {
-  res.send(users);
-  //res.status(200).json(users);
-});
-routerUsers.get('/users/:id', (req, res) => {
-  if (!users.find(item => item._id === req.params.id)) {
-    res.status(404).send({"message": "Нет пользователя с таким id"});
+const getUsersMiddleware = (req, res, next) => {
+  fs.readFile('./data/users.json', (err, data) => {
+    if (err) {
+      next(err);
+      return;
+    }
+    res.users = JSON.parse(data);
+
+    next();
+  });
+};
+
+const sendUsers = (req, res) => {
+  res.send(res.users);
+};
+const doesUserExist = (req, res) => {
+  if (!res.users.find((item) => item._id === req.params.id)) {
+    res.status(404).send({ message: 'Нет пользователя с таким id' });
     return;
-  }else{
-    res.send(users.find(item => item._id === req.params.id));
-  };
-});
+  }
+  res.send(res.users.find((item) => item._id === req.params.id));
+};
+
+routerUsers.use('/', getUsersMiddleware);
+routerUsers.get('/', sendUsers);
+routerUsers.get('/:id', doesUserExist);
 
 module.exports = routerUsers;
