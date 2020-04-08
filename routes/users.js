@@ -1,16 +1,17 @@
 const routerUsers = require('express').Router();
-const fs = require('fs');
+const fsPromises = require('fs').promises;
+const path = require('path');
 
 const getUsersMiddleware = (req, res, next) => {
-  fs.readFile('./data/users.json', (err, data) => {
-    if (err) {
-      next(err);
-      return;
-    }
-    res.users = JSON.parse(data);
-
-    next();
-  });
+  const folderPath = path.resolve('data/users.json');
+  fsPromises.readFile(folderPath, { encoding: 'utf8' })
+    .catch(() => {
+      throw new Error(' Ого, ошибка! o_O');
+    })
+    .then((data) => {
+      res.users = JSON.parse(data);
+      next();
+    });
 };
 
 const sendUsers = (req, res) => {

@@ -1,8 +1,23 @@
 const routerCards = require('express').Router();
-const cards = require('../data/cards.json');
+const fsPromises = require('fs').promises;
+const path = require('path');
 
-routerCards.get('/cards', (req, res) => {
-  res.send(cards);
-});
+const getCardsMiddleware = (req, res, next) => {
+  const folderPath = path.resolve('data/cards.json');
+  fsPromises.readFile(folderPath, { encoding: 'utf8' })
+    .catch(() => {
+      throw new Error(' Ого, ошибка! o_O');
+    })
+    .then((data) => {
+      res.cards = JSON.parse(data);
+      next();
+    });
+};
+
+const sendCards = (req, res) => {
+  res.send(res.cards);
+};
+routerCards.use('/', getCardsMiddleware);
+routerCards.get('/', sendCards);
 
 module.exports = routerCards;
