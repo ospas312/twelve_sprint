@@ -1,4 +1,3 @@
-const routerUsers = require('express').Router();
 const fsPromises = require('fs').promises;
 const path = require('path');
 
@@ -25,8 +24,8 @@ const doesUserExist = (req, res) => {
   res.send(res.users.find((item) => item._id === req.params.id));
 };
 
-routerUsers.use('/', getUsersMiddleware);
-routerUsers.get('/', sendUsers);
-routerUsers.get('/:id', doesUserExist);
-
-module.exports = routerUsers;
+module.exports = {
+  getUsersMiddleware,
+  sendUsers,
+  doesUserExist,
+};

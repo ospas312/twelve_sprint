@@ -1,4 +1,4 @@
-const routerCards = require('express').Router();
+//const routerCards = require('express').Router();
 const fsPromises = require('fs').promises;
 const path = require('path');
 
@@ -17,7 +17,5 @@ const getCardsMiddleware = (req, res, next) => {
 const sendCards = (req, res) => {
   res.send(res.cards);
 };
-routerCards.use('/', getCardsMiddleware);
-routerCards.get('/', sendCards);
 
-module.exports = routerCards;
+module.exports = { getCardsMiddleware, sendCards };
