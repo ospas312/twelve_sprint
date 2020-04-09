@@ -4,12 +4,12 @@ const path = require('path');
 const getUsersMiddleware = (req, res, next) => {
   const folderPath = path.resolve('data/users.json');
   fsPromises.readFile(folderPath, { encoding: 'utf8' })
-    .catch(() => {
-      res.status(500).send({ message: 'Ошибка на стороне сервера' });
-    })
     .then((data) => {
       res.users = JSON.parse(data);
       next();
+    })
+    .catch(() => {
+      res.status(500).send({ message: 'Ошибка на стороне сервера' });
     });
 };
 
